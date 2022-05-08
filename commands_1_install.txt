@@ -1,6 +1,6 @@
 
 #Install the rpms Server
-rpm -ivh MQSeriesRuntime-*.rpm MQSeriesServer-*.rpm MQSeriesSamples-*.rpm MQSeriesGSKit-*.rpm
+rpm -ivh MQSeriesRuntime-*.rpm MQSeriesServer-*.rpm MQSeriesSamples-*.rpm MQSeriesGSKit-*.rpm MQSeriesJRE-*.rpm
 
 vi /etc/security/limits.conf
 vi /etc/sysctl.d/mqm.conf
@@ -9,11 +9,14 @@ vi /etc/sysctl.d/mqm.conf
 
 reboot
 
+#Create mq@QMA.service
+systemctl enable --now mq@QMA.service
+
 su - mqm
 /opt/mqm/bin/mqconfig
 
 
 
 #Install the rpms Client
-yum install MQSeriesClient-*.rpm MQSeriesRuntime-*.rpm MQSeriesGSKit-*.rpm
+yum install MQSeriesClient-*.rpm MQSeriesRuntime-*.rpm MQSeriesGSKit-*.rpm MQSeriesJRE-*.rpm
 yum install -y /tmp/MQServer/MQSeriesSamples-*.rpm

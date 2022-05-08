@@ -1,0 +1,18 @@
+
+
+cd /var/mqm/qmgrs/QMA/ssl
+
+// create qmgr keystore
+runmqckm -keydb -create -db QMA.kdb -type cms -pw DSJRjhe59345hds -stash
+runmqckm -keydb -create -db client.kdb -type cms -pw GS7udfERT345hds -stash
+runmqckm -certreq -create -db QMA.kdb -stashed -label ibmwebspheremqqma  -dn "CN=QMA,O=Queue,C=BR" -size 2048 -file QMA.csr -sig_alg SHA2/ECDSA
+runmqckm -certreq -create -db 'QMA1.kdb' -stashed -label 'ibmwebspheremqqma1' -dn 'CN=QMA1,OU=BRADESCO SECURE SERVER,O=EU,L=MQQDEV,C=LX' -size 2048 -file 'QMA1.csr' -sig_alg SHA256WithRSA
+runmqckm -certreq -create -db client.kdb -stashed -label ibmwebspheremqroot -dn "CN=root,O=Queue,C=BR" -size 2048
+
+
+
+// create self-signed cert for queue manager
+runmqckm -cert -create -db key.kdb -pw passw0rd -label ibmwebspheremqssl1 -dn "CN=ssl1,O=IBM,C=US" -size 2048
+
+// extract public part to be used to exchange to the connecting user
+runmqckm -cert -extract -db key.kdb -pw passw0rd -label ibmwebspheremqssl1 -target ssl1.arm
