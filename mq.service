@@ -1,0 +1,14 @@
+[Unit]
+Description=IBM MQ V9 queue manager %I
+After=network.target
+[Service]
+ExecStart=/opt/mqm/bin/strmqm %I
+ExecStop=/opt/mqm/bin/endmqm -w %I
+Type=forking
+User=mqm
+Group=mqm
+KillMode=none
+LimitNOFILE=10240
+LimitNPROC=4096
+[Install]
+WantedBy=multi-user.target

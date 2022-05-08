@@ -1,0 +1,23 @@
+crtmqm QMA
+strmqm QMA
+
+runmqsc QMA
+DEFINE QLOCAL (QUEUE1)
+DEFINE CHANNEL(QMA.SVRCONN) CHLTYPE(SVRCONN) TRPTYPE(TCP)
+DEFINE LISTENER (listener1) TRPTYPE(TCP) CONTROL(QMGR) PORT(1414)
+START LISTENER (listener1)
+DEFINE CHANNEL(QMA.SVRCONN) CHLTYPE(CLNTCONN) CONNAME ('192.168.0.139(1414)') QMNAME(QMA)
+
+dspmqaut -m QMA -t queue -n QUEUE1 -p root
+setmqaut -m QMA -t qmgr +connect -p root
+setmqaut -m QMA -t qmgr +inq -p root
+setmqaut -m QMA -t queue -n QUEUE1 +put -p root
+setmqaut -m QMA -t queue -n QUEUE1 +get -p root
+
+scp '/var/mqm/qmgrs/QMA/@ipcc/AMQCLCHL.TAB' 192.168.0.138:/tmp
+
+export MQCHLLIB=/tmp
+export MQCHLTAB=AMQCLCHL.TAB
+
+/opt/mqm/samp/bin/amqsput QUEUE1 QMA
+/opt/mqm/samp/bin/amqsget QUEUE1 QMA

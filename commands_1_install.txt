@@ -1,0 +1,19 @@
+
+#Install the rpms Server
+rpm -ivh MQSeriesRuntime-*.rpm MQSeriesServer-*.rpm MQSeriesSamples-*.rpm MQSeriesGSKit-*.rpm
+
+vi /etc/security/limits.conf
+vi /etc/sysctl.d/mqm.conf
+
+/opt/mqm/bin/setmqinst -i -p /opt/mqm
+
+reboot
+
+su - mqm
+/opt/mqm/bin/mqconfig
+
+
+
+#Install the rpms Client
+yum install MQSeriesClient-*.rpm MQSeriesRuntime-*.rpm MQSeriesGSKit-*.rpm
+yum install -y /tmp/MQServer/MQSeriesSamples-*.rpm

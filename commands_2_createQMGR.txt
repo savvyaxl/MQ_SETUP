@@ -1,0 +1,30 @@
+
+#as mqm
+
+
+crtmqm QMA
+
+strmqm QMA
+endmqm QMA
+dltmqm QMA
+runmqsc QMA
+
+DEFINE QLOCAL (QUEUE1)
+
+end
+
+/opt/mqm/samp/bin/amqsput QUEUE1 QMA
+
+Type some message text on one or more lines, where each line is a different message. Enter a blank line to end the message input.
+The following message is shown:
+
+Sample AMQSPUT0 end
+
+Your messages are now on the queue and the command prompt is shown.
+Get the messages from the queue, by entering the following command:
+
+/opt/mqm/samp/bin/amqsget QUEUE1 QMA
+
+
+#qmgr certificate kdb
+/var/mqm/qmgrs/QM1/ssl
