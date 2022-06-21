@@ -1,12 +1,15 @@
 
-#as mqm
 
+yum install bc
+
+#as mqm
+/opt/mqm/bin/mqconfig
 
 crtmqm QMA
 
 strmqm QMA
-endmqm QMA
-dltmqm QMA
+#endmqm QMA
+#dltmqm QMA
 runmqsc QMA
 
 DEFINE QLOCAL (QUEUE1)
