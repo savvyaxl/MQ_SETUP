@@ -1,18 +1,18 @@
 
 #### https://www.ibm.com/docs/en/ibm-mq/8.0?topic=telemetry-configuring-queue-manager-linux-aix ####
-
+# run as root
 
 #Get the name of the Queue Manager
 QMGR=${1-MQXR_QM}
-QMGROLD=${1-MQXR_QM}
+QMGROLD=$QMGR
 
 #Get the Port number
 PORT=${2-1883}
 
-endmqm -w $QMGROLD
-dltmqm $QMGROLD
-
-crtmqm $QMGR
+su - mqm -c "endmqm -w $QMGROLD"
+su - mqm -c "dltmqm $QMGROLD"
+sleep 10
+su - mqm -c "crtmqm $QMGR"
 
 #Create mq.service
 cat << EOF > /etc/systemd/system/mq@.service
@@ -42,16 +42,16 @@ cat <<-EOF
     DEFINE QLOCAL('SYSTEM.MQTT.TRANSMIT.QUEUE') USAGE(XMITQ) MAXDEPTH(100000)
     ALTER QMGR DEFXMITQ('SYSTEM.MQTT.TRANSMIT.QUEUE')
 EOF
-) | runmqsc $QMGR
+) | su - mqm -c "runmqsc $QMGR"
 
 # Permissions
 # Allow user nobody to do this.
 # HAhaHaHa
 USER=nobody
-setmqaut -m $QMGR -t q -n SYSTEM.MQTT.TRANSMIT.QUEUE -p $USER -all +put
-setmqaut -m $QMGR -t topic -n SYSTEM.BASE.TOPIC -p $USER -all +pub +sub
-setmqaut -m $QMGR -t qmgr +connect -p $USER
-setmqaut -m $QMGR -t qmgr +inq -p $USER
+su - mqm -c "setmqaut -m $QMGR -t q -n SYSTEM.MQTT.TRANSMIT.QUEUE -p $USER -all +put"
+su - mqm -c "setmqaut -m $QMGR -t topic -n SYSTEM.BASE.TOPIC -p $USER -all +pub +sub"
+su - mqm -c "setmqaut -m $QMGR -t qmgr +connect -p $USER"
+su - mqm -c "setmqaut -m $QMGR -t qmgr +inq -p $USER"
 
 # Part 2
 (
@@ -71,4 +71,4 @@ cat <<-EOF
     DEFINE LISTENER (MQXR_LISTENER) TRPTYPE(TCP) CONTROL(QMGR) PORT(1883)
     START LISTENER (MQXR_LISTENER)
 EOF
-) | runmqsc $QMGR
+) | su - mqm -c "runmqsc $QMGR"
