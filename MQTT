@@ -1,0 +1,50 @@
+
+#### https://www.ibm.com/docs/en/ibm-mq/8.0?topic=telemetry-configuring-queue-manager-linux-aix ####
+
+
+#Get the name of the Queue Manager
+QMGR=${1-MQXR_QM}
+
+#Get the Port number
+PORT=${2-1883}
+
+
+crtmqm $QMGR
+strmqm $QMGR
+
+# Part 1
+(
+cat <<-EOF
+    DEFINE QLOCAL('SYSTEM.MQTT.TRANSMIT.QUEUE') USAGE(XMITQ) MAXDEPTH(100000)
+    ALTER QMGR DEFXMITQ('SYSTEM.MQTT.TRANSMIT.QUEUE')
+EOF
+) | runmqsc $QMGR
+
+# Permissions
+# Allow user nobody to do this.
+# HAhaHaHa
+USER=nobody
+setmqaut -m $QMGR -t q -n SYSTEM.MQTT.TRANSMIT.QUEUE -p $USER -all +put
+setmqaut -m $QMGR -t topic -n SYSTEM.BASE.TOPIC -p $USER -all +pub +sub
+setmqaut -m $QMGR -t qmgr +connect -p $USER
+setmqaut -m $QMGR -t qmgr +inq -p $USER
+
+# Part 2
+(
+cat <<-EOF
+    DEF SERVICE(SYSTEM.MQXR.SERVICE) +
+        CONTROL(QMGR) +
+        DESCR('Manages clients using MQXR protocols such as MQTT') +
+        SERVTYPE(SERVER) +
+        STARTCMD('+MQ_INSTALL_PATH+/mqxr/bin/runMQXRService.sh') +
+        STARTARG('-m +QMNAME+ -d "+MQ_Q_MGR_DATA_PATH+" -g "+MQ_DATA_PATH+"') +
+        STOPCMD('+MQ_INSTALL_PATH+/mqxr/bin/endMQXRService.sh') +
+        STOPARG('-m +QMNAME+ -d "+MQ_Q_MGR_DATA_PATH+" -g "+MQ_DATA_PATH+"') +
+        STDOUT('+MQ_Q_MGR_DATA_PATH+/mqxr.stdout') +
+        STDERR('+MQ_Q_MGR_DATA_PATH+/mqxr.stderr')
+    START SERVICE(SYSTEM.MQXR.SERVICE)
+    DEFINE CHANNEL('PlainText') CHLTYPE(MQTT) PORT($PORT) MCAUSER('nobody')
+    DEFINE LISTENER (MQXR_LISTENER) TRPTYPE(TCP) CONTROL(QMGR) PORT(1883)
+    START LISTENER (MQXR_LISTENER)
+EOF
+) | runmqsc $QMGR

@@ -2,6 +2,8 @@
 #Install the rpms Server
 ./mqlicense.sh
 rpm -ivh MQSeriesRuntime-*.rpm MQSeriesServer-*.rpm MQSeriesSamples-*.rpm MQSeriesGSKit-*.rpm MQSeriesJRE-*.rpm
+# for MQTT
+rpm -ivh MQSeriesXRService-*.rpm MQSeriesJava-*.rpm
 
 cat << EOF > /etc/security/limits.d/90-mqm.conf
 mqm       hard  nofile     10240
@@ -27,8 +29,6 @@ kernel.threads-max = 32768
 EOF
 
 yum install bc
-
-
 /opt/mqm/bin/setmqinst -i -p /opt/mqm
 
 reboot
@@ -51,7 +51,7 @@ LimitNPROC=4096
 WantedBy=multi-user.target
 EOF
 
-crtmqm QMA -u DEAD.LETTER.QUEUE
+su - mqm -c 'crtmqm -u DEAD.LETTER.QUEUE QMB'
 
 systemctl enable --now mq@QMA.service
 
@@ -62,4 +62,3 @@ su - mqm
 
 #Install the rpms Client
 yum install MQSeriesClient-*.rpm MQSeriesRuntime-*.rpm MQSeriesGSKit-*.rpm MQSeriesJRE-*.rpm
-yum install -y /tmp/MQServer/MQSeriesJRE-*.rpm
