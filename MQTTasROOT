@@ -4,17 +4,32 @@
 
 #Get the name of the Queue Manager
 QMGR=${1-MQXR_QM}
-QMGROLD=$QMGR
 
 #Get the Port number
 PORT=${2-1883}
 
-su - mqm -c "endmqm -w $QMGROLD"
-su - mqm -c "dltmqm $QMGROLD"
+# Check if qmgr already exists, stop and delete it.
+COUNT=$(dspmq | grep $QMGR | grep -c '(Running)')
+
+CREATE_SERVICE=0
+if[[ $COUNT -eq 1 ]]
+then
+    if [[ -f /etc/systemd/system/mq@.service ]]
+    then
+        systemctl disable mq@$QMGR.service
+        systemctl stop mq@$QMGR.service
+    else
+        su - mqm -c "endmqm -w $QMGR"
+        CREATE_SERVICE=1
+    fi
+fi
+su - mqm -c "dltmqm $QMGR"
 sleep 10
 su - mqm -c "crtmqm $QMGR"
 
 #Create mq.service
+if [[ $CREATE_SERVICE -eq 1 ]]
+then
 cat << EOF > /etc/systemd/system/mq@.service
 [Unit]
 Description=IBM MQ V9 queue manager %I
@@ -31,6 +46,7 @@ LimitNPROC=4096
 [Install]
 WantedBy=multi-user.target
 EOF
+fi
 
 systemctl daemon-reload
 systemctl enable --now mq@$QMGR.service
@@ -72,3 +88,6 @@ cat <<-EOF
     START LISTENER (MQXR_LISTENER)
 EOF
 ) | su - mqm -c "runmqsc $QMGR"
+
+
+# DIS CHANNEL('PlainText') CHLTYPE(MQTT)

@@ -1,15 +1,15 @@
 
-
-cd /var/mqm/qmgrs/QMA/ssl
+QMGR=${1-BOB}
 
 // create qmgr keystore
-cd /var/mqm/qmgrs/QMA/ssl
-runmqckm -keydb -create -db QMA.kdb -type cms -pw DSJRjhe59345hds -stash
-runmqckm -certreq -create -db 'QMA.kdb' -stashed -label 'ibmwebspheremqqma' -dn 'CN=QMA,OU=SECURE SERVER,O=EU,L=MQQDEV,C=LX' -size 2048 -file 'QMA.csr' -sig_alg SHA256WithRSA
+su - mqm
+cd /var/mqm/qmgrs/$QMGR/ssl
+runmqckm -keydb -create -db $QMGR.kdb -type cms -pw DSJRjhe59345hds -stash
+runmqckm -certreq -create -db $QMGR.kdb -stashed -label 'ibmwebspheremq'$(echo "$QMGR" | tr '[:upper:]' '[:lower:]') -dn "CN=$QMGR,OU=SECURE SERVER,O=EU,L=MQQDEV,C=LX" -size 2048 -file $QMGR.csr -sig_alg SHA256WithRSA
 
-runmqckm -cert -add -db 'QMA.kdb' -stashed -file 'CA.crt' -label 'root CA'
-runmqckm -cert -receive -db 'QMA.kdb' -stashed -file 'QMA.crt'
-runmqckm -cert -details -db 'QMA.kdb' -stashed -label 'ibmwebspheremqqma'
+runmqckm -cert -add -db $QMGR.kdb -stashed -file 'CA.crt' -label 'root CA'
+runmqckm -cert -receive -db $QMGR.kdb -stashed -file $QMGR.crt
+runmqckm -cert -details -db $QMGR.kdb -stashed -label 'ibmwebspheremq'$(echo "$QMGR" | tr '[:upper:]' '[:lower:]')
 
 mkdir -p /tmp/ssl
 cd /tmp/ssl
