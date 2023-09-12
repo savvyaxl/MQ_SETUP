@@ -2,7 +2,7 @@
 #Install the rpms Server
 ./mqlicense.sh
 rpm -ivh MQSeriesRuntime-*.rpm MQSeriesServer-*.rpm MQSeriesSamples-*.rpm MQSeriesGSKit-*.rpm MQSeriesJRE-*.rpm
-rpm -ivh MQSeriesRuntime MQSeriesServer MQSeriesSamples MQSeriesGSKit MQSeriesJRE
+yum install -y MQSeriesRuntime MQSeriesServer MQSeriesSamples MQSeriesGSKit MQSeriesJRE
 # for MQTT
 rpm -ivh MQSeriesXRService-*.rpm MQSeriesJava-*.rpm
 
