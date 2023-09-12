@@ -5,6 +5,23 @@ rpm -ivh MQSeriesRuntime-*.rpm MQSeriesServer-*.rpm MQSeriesSamples-*.rpm MQSeri
 # for MQTT
 rpm -ivh MQSeriesXRService-*.rpm MQSeriesJava-*.rpm
 
+There are 2 different commands that are related to the acceptance of the license:
+a) BEFORE the actual installation step:
+Location: directory where file from Passport Advantage has been unpackaged, such as:
+/downloads/mq9202/MQServer
+File (shell script):    mqlicense.sh 
+Userid that needs to run the script:    root
+Example run:
+  ./mqlicense.sh -accept 
+
+2) AFTER the installation is done
+Location: directory with MQ executables: /opt/mqm/bin
+File (binary executable):     mqlicense
+Userid that needs to run the command:   root
+Example:
+  cd /opt/mqm/bin
+  ./mqlicense -accept
+
 cat << EOF > /etc/security/limits.d/90-mqm.conf
 mqm       hard  nofile     10240
 mqm       soft  nofile     10240
