@@ -80,3 +80,4 @@ su - mqm
 
 #Install the rpms Client
 yum install MQSeriesClient-*.rpm MQSeriesRuntime-*.rpm MQSeriesGSKit-*.rpm MQSeriesJRE-*.rpm
+yum install MQSeriesClient MQSeriesRuntime MQSeriesGSKit MQSeriesJRE MQSeriesSamples
