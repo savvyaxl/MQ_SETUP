@@ -32,6 +32,9 @@ setmqaut -m QMA -t qmgr +inq -p root
 setmqaut -m QMA -t queue -n QUEUE1 +put -p root
 setmqaut -m QMA -t queue -n QUEUE1 +get -p root
 
+export MQSERVER='SYSTEM.DEF.SVRCONN/TCP/AMACHINE.ACOMPANY.COM(1414) '
+
+
 scp '/var/mqm/qmgrs/QMA/@ipcc/AMQCLCHL.TAB' root@192.168.0.138:/tmp
 
 export MQCHLLIB=/tmp
